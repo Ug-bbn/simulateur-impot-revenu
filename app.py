@@ -28,23 +28,29 @@ else:
     revenu = revenus_percus = st.number_input("Revenu net imposable du foyer (€)", 0, 4_000_000, 27_000, step=1_000)
 r = calcul_impot(revenu, situation, enfants)
 
+
+def nb(x, dec=0):
+    """Format français : espace pour les milliers, virgule décimale."""
+    return f"{x:,.{dec}f}".replace(",", " ").replace(".", ",")
+
+
 c1, c2, c3 = st.columns(3)
-c1.metric("Impôt à payer", f"{r['a_payer']:,} €".replace(",", " "))
-c2.metric("Taux moyen", f"{r['taux_moyen']:.2%}")
+c1.metric("Impôt à payer", f"{nb(r['a_payer'])} €")
+c2.metric("Taux moyen", f"{nb(r['taux_moyen'] * 100, 2)} %")
 c3.metric("Parts", f"{r['parts']:g}")
 
 st.subheader("Détail du calcul")
 st.markdown(
-    f"- Revenu net imposable (base du barème) : **{revenu:,.0f} €**\n"
-    f"- Impôt brut : **{r['impot_brut']:,.0f} €**"
+    f"- Revenu net imposable (base du barème) : **{nb(revenu)} €**\n"
+    f"- Impôt brut : **{nb(r['impot_brut'])} €**"
     + (" (plafonnement du quotient familial appliqué)" if r["plafonnement_qf"] else "") + "\n"
-    f"- Décote : **{r['decote']:,.0f} €**\n"
-    f"- Impôt net : **{r['impot_net']:,} €**"
+    f"- Décote : **{nb(r['decote'])} €**\n"
+    f"- Impôt net : **{nb(r['impot_net'])} €**"
     + (" — inférieur à 61 €, non mis en recouvrement" if r["impot_net"] and not r["a_payer"] else "")
 )
 st.dataframe(
     pd.DataFrame(r["tranches"], columns=["Montant par part (€)", "Taux", "Impôt par part (€)"])
-    .style.format({"Montant par part (€)": "{:,.0f}", "Taux": "{:.0%}", "Impôt par part (€)": "{:,.0f}"}),
+    .style.format({"Montant par part (€)": nb, "Taux": lambda t: f"{nb(t * 100)} %", "Impôt par part (€)": nb}),
     hide_index=True,
 )
 
@@ -54,7 +60,7 @@ if revenus_percus:
         "Part": ["Revenu disponible", "Impôt sur le revenu"],
         "Montant": [revenus_percus - r["a_payer"], r["a_payer"]],
     })
-    parts_revenu["Libellé"] = parts_revenu["Montant"].map(lambda m: f"{m:,.0f} €".replace(",", " "))
+    parts_revenu["Libellé"] = parts_revenu["Montant"].map(lambda m: f"{nb(m)} €")
     base = alt.Chart(parts_revenu).encode(
         theta=alt.Theta("Montant:Q", stack=True),
         color=alt.Color("Part:N", scale=alt.Scale(domain=["Revenu disponible", "Impôt sur le revenu"], range=["#1f3a93", "#f5b700"]), legend=alt.Legend(title=None)),

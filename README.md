@@ -2,7 +2,13 @@
 
 ![tests](https://github.com/Ug-bbn/simulateur-impot-revenu/actions/workflows/tests.yml/badge.svg)
 
-> 🇬🇧 *A French income-tax calculator (2026 rules) in Python: fully tested business logic and an interactive Streamlit app. It shows how I turn written regulations into reliable, tested code.*
+**▶ [Essayer l'application en ligne](https://simulateur-i-r-ugbbn.streamlit.app/)**
+
+> 🇬🇧 *A French income-tax calculator (2026 rules) in Python: fully tested business logic and an interactive Streamlit app. It shows how I turn written regulations into reliable, tested code. [Live demo](https://simulateur-i-r-ugbbn.streamlit.app/).*
+
+| Saisie | Résultat |
+|---|---|
+| ![Saisie du simulateur](docs/saisie.png) | ![Résultat : détail du calcul et pression fiscale](docs/resultat.png) |
 
 ## Le problème
 
