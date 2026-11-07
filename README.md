@@ -37,6 +37,8 @@ pytest                 # les tests
 | Décote | 897 € − 45,25 % × impôt (célibataire), 1 483 € − 45,25 % × impôt (couple) |
 | Seuil de recouvrement | 61 € |
 
+**Attention aux termes :** le « net imposable » d'une fiche de paie est le montant *avant* la déduction de 10 %. Le « revenu net imposable » d'un avis d'impôt est le montant *après*. L'application demande lequel on saisit, et la colonne `revenu` de `tests/cas_reference.csv` désigne toujours le revenu après déduction. Un cas est recoupé avec le simulateur de Boursorama (45 000 €, célibataire : 6 604 €, résultat identique).
+
 **Hors périmètre :** revenus autres que les salaires, parent isolé (case T) et autres demi-parts spécifiques, réductions et crédits d'impôt, contribution sur les hauts revenus.
 
 ## Sources

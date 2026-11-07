@@ -10,11 +10,20 @@ st.caption("Revenus 2025 · salariés · barème de la loi de finances pour 2026
 situation = st.radio("Situation", ["celibataire", "couple"], horizontal=True,
                      format_func=lambda s: "Célibataire" if s == "celibataire" else "Marié / pacsé")
 enfants = st.number_input("Enfants à charge", 0, 10, 0)
-salaires = [st.number_input("Salaire net imposable annuel — déclarant 1 (€)", 0, 2_000_000, 30_000, step=1_000)]
-if situation == "couple":
-    salaires.append(st.number_input("Salaire net imposable annuel — déclarant 2 (€)", 0, 2_000_000, 30_000, step=1_000))
-
-revenu = revenu_imposable(*salaires)
+saisie = st.radio(
+    "Je saisis", ["salaires", "revenu"], horizontal=True,
+    format_func=lambda s: "Mes salaires (fiche de paie / case 1AJ)" if s == "salaires"
+    else "Mon revenu net imposable (déjà après déduction des 10 %)",
+    help="Le « net imposable » de la fiche de paie est AVANT la déduction de 10 %. "
+         "Le « revenu net imposable » de l'avis d'impôt (et de nombreux simulateurs) est APRÈS.",
+)
+if saisie == "salaires":
+    salaires = [st.number_input("Salaire net imposable annuel — déclarant 1 (€)", 0, 2_000_000, 30_000, step=1_000)]
+    if situation == "couple":
+        salaires.append(st.number_input("Salaire net imposable annuel — déclarant 2 (€)", 0, 2_000_000, 30_000, step=1_000))
+    revenu = revenu_imposable(*salaires)
+else:
+    revenu = st.number_input("Revenu net imposable du foyer (€)", 0, 4_000_000, 27_000, step=1_000)
 r = calcul_impot(revenu, situation, enfants)
 
 c1, c2, c3 = st.columns(3)
@@ -24,7 +33,7 @@ c3.metric("Parts", f"{r['parts']:g}")
 
 st.subheader("Détail du calcul")
 st.markdown(
-    f"- Revenu net imposable (après déduction de 10 %) : **{revenu:,.0f} €**\n"
+    f"- Revenu net imposable (base du barème) : **{revenu:,.0f} €**\n"
     f"- Impôt brut : **{r['impot_brut']:,.0f} €**"
     + (" (plafonnement du quotient familial appliqué)" if r["plafonnement_qf"] else "") + "\n"
     f"- Décote : **{r['decote']:,.0f} €**\n"

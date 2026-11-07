@@ -4,6 +4,7 @@ Décote qui annule l'impôt,13500,celibataire,0,0,0,calcul manuel
 Sous le seuil de recouvrement (61 €),17500,celibataire,0,46,0,calcul manuel
 Célibataire avec décote,27000,celibataire,0,1564,1564,calcul manuel
 Couple 2 enfants avec décote,54000,couple,2,1585,1585,calcul manuel
+Célibataire tranche 30 %,45000,celibataire,0,6604,6604,simulateur Boursorama (Quantix) 2026-11-07
 Célibataire tranche 41 %,90000,celibataire,0,20701,20701,calcul manuel
 Couple 1 enfant plafonnement QF,180000,couple,1,39594,39594,calcul manuel
 Célibataire tranche 45 %,185445,celibataire,0,59974,59974,calcul manuel
