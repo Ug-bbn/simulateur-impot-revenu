@@ -1,3 +1,4 @@
+import altair as alt
 import pandas as pd
 import streamlit as st
 
@@ -22,13 +23,14 @@ if saisie == "salaires":
     if situation == "couple":
         salaires.append(st.number_input("Salaire net imposable annuel — déclarant 2 (€)", 0, 2_000_000, 30_000, step=1_000))
     revenu = revenu_imposable(*salaires)
+    revenus_percus = sum(salaires)  # la déduction de 10 % est fiscale : l'argent perçu reste le salaire
 else:
-    revenu = st.number_input("Revenu net imposable du foyer (€)", 0, 4_000_000, 27_000, step=1_000)
+    revenu = revenus_percus = st.number_input("Revenu net imposable du foyer (€)", 0, 4_000_000, 27_000, step=1_000)
 r = calcul_impot(revenu, situation, enfants)
 
 c1, c2, c3 = st.columns(3)
 c1.metric("Impôt à payer", f"{r['a_payer']:,} €".replace(",", " "))
-c2.metric("Taux moyen", f"{r['taux_moyen']:.1%}")
+c2.metric("Taux moyen", f"{r['taux_moyen']:.2%}")
 c3.metric("Parts", f"{r['parts']:g}")
 
 st.subheader("Détail du calcul")
@@ -46,9 +48,22 @@ st.dataframe(
     hide_index=True,
 )
 
-st.subheader("Impôt selon le revenu imposable")
-courbe = pd.DataFrame({"Revenu imposable (€)": range(0, 200_001, 2_000)})
-courbe["Impôt net (€)"] = [calcul_impot(x, situation, enfants)["impot_net"] for x in courbe["Revenu imposable (€)"]]
-st.line_chart(courbe, x="Revenu imposable (€)", y="Impôt net (€)")
+st.subheader("Pression fiscale")
+if revenus_percus:
+    parts_revenu = pd.DataFrame({
+        "Part": ["Revenu disponible", "Impôt sur le revenu"],
+        "Montant": [revenus_percus - r["a_payer"], r["a_payer"]],
+    })
+    parts_revenu["Libellé"] = parts_revenu["Montant"].map(lambda m: f"{m:,.0f} €".replace(",", " "))
+    base = alt.Chart(parts_revenu).encode(
+        theta=alt.Theta("Montant:Q", stack=True),
+        color=alt.Color("Part:N", scale=alt.Scale(range=["#1f3a93", "#f5b700"]), legend=alt.Legend(title=None)),
+        tooltip=["Part", "Libellé"],
+    )
+    st.altair_chart(
+        base.mark_arc(innerRadius=70, outerRadius=120)
+        + base.mark_text(radius=145, size=14).encode(text="Libellé:N"),
+        width="stretch",
+    )
 
 st.caption("Simulation indicative. Seuls les salaires sont traités, sans réductions ni crédits d'impôt.")
