@@ -57,7 +57,7 @@ if revenus_percus:
     parts_revenu["Libellé"] = parts_revenu["Montant"].map(lambda m: f"{m:,.0f} €".replace(",", " "))
     base = alt.Chart(parts_revenu).encode(
         theta=alt.Theta("Montant:Q", stack=True),
-        color=alt.Color("Part:N", scale=alt.Scale(range=["#1f3a93", "#f5b700"]), legend=alt.Legend(title=None)),
+        color=alt.Color("Part:N", scale=alt.Scale(domain=["Revenu disponible", "Impôt sur le revenu"], range=["#1f3a93", "#f5b700"]), legend=alt.Legend(title=None)),
         tooltip=["Part", "Libellé"],
     )
     st.altair_chart(
